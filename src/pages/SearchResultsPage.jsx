@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { Search, ExternalLink, ChevronRight, Filter, BookOpen, Scale, Gavel, FileText, Landmark, Clock, ArrowLeft } from 'lucide-react'
+import { Search, ExternalLink, ChevronRight, Filter, BookOpen, Scale, Gavel, FileText, Landmark, Clock, ArrowLeft, AlertCircle } from 'lucide-react'
 import './SearchResultsPage.css'
 
 const SOURCE_FILTERS = [
@@ -12,93 +12,39 @@ const SOURCE_FILTERS = [
   { id: 'supreme-court', label: 'Supreme Court', icon: Landmark },
 ]
 
-// Mock results for demo
-const MOCK_RESULTS = [
-  {
-    id: 1,
-    title: 'Mental Capacity Act 2005',
-    source: 'legislation',
-    sourceLabel: 'legislation.gov.uk',
-    url: 'https://www.legislation.gov.uk/ukpga/2005/9/contents',
-    snippet: 'An Act to make new provision relating to persons who lack capacity; to establish a superior court of record called the Court of Protection in place of the office of the Supreme Court called by that name...',
-    date: '2005',
-    type: 'Act of Parliament'
-  },
-  {
-    id: 2,
-    title: 'Aintree University Hospitals NHS Foundation Trust v James [2013] UKSC 67',
-    source: 'supreme-court',
-    sourceLabel: 'Supreme Court',
-    url: 'https://www.supremecourt.uk/cases/uksc-2013-0134.html',
-    snippet: 'The best interests test under the Mental Capacity Act 2005 is not confined to considering the medical best interests of the patient. The court must consider the patient\'s welfare in the widest sense...',
-    date: '2013',
-    type: 'Supreme Court Judgment'
-  },
-  {
-    id: 3,
-    title: 'Court of Protection Rules 2017',
-    source: 'rules',
-    sourceLabel: 'Court Rules',
-    url: 'https://www.legislation.gov.uk/uksi/2017/1035/contents',
-    snippet: 'Rules of court governing procedure in the Court of Protection, including applications relating to property and affairs, personal welfare, and deprivation of liberty...',
-    date: '2017',
-    type: 'Statutory Instrument'
-  },
-  {
-    id: 4,
-    title: 'Re X (Deprivation of Liberty) [2014] EWCOP 25',
-    source: 'caselaw',
-    sourceLabel: 'National Archives',
-    url: 'https://caselaw.nationalarchives.gov.uk/',
-    snippet: 'Establishing the streamlined procedure for authorisation of deprivation of liberty under the Mental Capacity Act 2005, known as the Re X procedure...',
-    date: '2014',
-    type: 'Court of Protection'
-  },
-  {
-    id: 5,
-    title: 'Mental Capacity Act 2005 Code of Practice',
-    source: 'guidance',
-    sourceLabel: 'Practice Direction',
-    url: 'https://www.gov.uk/government/publications/mental-capacity-act-code-of-practice',
-    snippet: 'The Code of Practice provides guidance for decisions made under the Mental Capacity Act 2005. It describes the Act\'s provisions and offers practical guidance on how they should work in practice...',
-    date: '2007',
-    type: 'Code of Practice'
-  },
-  {
-    id: 6,
-    title: 'Cheshire West and Chester Council v P [2014] UKSC 19',
-    source: 'supreme-court',
-    sourceLabel: 'Supreme Court',
-    url: 'https://www.supremecourt.uk/cases/uksc-2012-0068.html',
-    snippet: 'The acid test for deprivation of liberty: a person is deprived of liberty if they are under continuous supervision and control and are not free to leave, regardless of the purpose or relative normality of the placement...',
-    date: '2014',
-    type: 'Supreme Court Judgment'
-  },
-]
-
 function SearchResultsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [query, setQuery] = useState(searchParams.get('q') || '')
   const [activeSource, setActiveSource] = useState(searchParams.get('source') || 'all')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const performSearch = useCallback(async (searchQuery, source) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const resp = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}&source=${encodeURIComponent(source)}`)
+      if (!resp.ok) throw new Error(`Search failed (${resp.status})`)
+      const data = await resp.json()
+      setResults(data)
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.')
+      setResults([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
     const q = searchParams.get('q')
+    const s = searchParams.get('source') || 'all'
     if (q) {
       setQuery(q)
-      performSearch(q)
+      setActiveSource(s)
+      performSearch(q, s)
     }
-  }, [searchParams])
-
-  const performSearch = (searchQuery) => {
-    setLoading(true)
-    // Simulated search delay — will be replaced with real API calls
-    setTimeout(() => {
-      setResults(MOCK_RESULTS)
-      setLoading(false)
-    }, 800)
-  }
+  }, [searchParams, performSearch])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -137,7 +83,12 @@ function SearchResultsPage() {
               <button
                 key={id}
                 className={`results-source-filter ${activeSource === id ? 'results-source-filter--active' : ''}`}
-                onClick={() => setActiveSource(id)}
+                onClick={() => {
+                  setActiveSource(id)
+                  if (searchParams.get('q')) {
+                    setSearchParams({ q: searchParams.get('q'), source: id })
+                  }
+                }}
               >
                 <Icon size={14} />
                 {label}
@@ -158,6 +109,15 @@ function SearchResultsPage() {
           <div className="results-loading">
             <div className="loading-spinner" />
             <p>Searching official UK sources...</p>
+          </div>
+        ) : error ? (
+          <div className="results-empty">
+            <AlertCircle size={48} />
+            <h3>Search error</h3>
+            <p>{error}</p>
+            <button className="btn btn-outline" onClick={() => performSearch(query, activeSource)}>
+              Try again
+            </button>
           </div>
         ) : filteredResults.length > 0 ? (
           <>

@@ -1,15 +1,24 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { Search, ExternalLink, ChevronRight, Filter, BookOpen, Scale, Gavel, FileText, Landmark, Clock, ArrowLeft, AlertCircle } from 'lucide-react'
+import { Search, ExternalLink, ChevronRight, Filter, BookOpen, Scale, Gavel, FileText, Landmark, Clock, ArrowLeft, AlertCircle, Building2, ScrollText, Library, Globe, Shield, Briefcase, Users } from 'lucide-react'
 import './SearchResultsPage.css'
 
 const SOURCE_FILTERS = [
   { id: 'all', label: 'All Sources', icon: Search },
   { id: 'legislation', label: 'Legislation', icon: BookOpen },
   { id: 'caselaw', label: 'Case Law', icon: Scale },
-  { id: 'rules', label: 'Court Rules', icon: Gavel },
-  { id: 'guidance', label: 'Practice Directions', icon: FileText },
   { id: 'supreme-court', label: 'Supreme Court', icon: Landmark },
+  { id: 'bailii', label: 'BAILII', icon: Scale },
+  { id: 'rules', label: 'Court Rules', icon: Gavel },
+  { id: 'guidance', label: 'Guidance', icon: FileText },
+  { id: 'parliament', label: 'Parliament', icon: Building2 },
+  { id: 'judiciary', label: 'Judiciary', icon: ScrollText },
+  { id: 'law-commission', label: 'Law Commission', icon: Library },
+  { id: 'eurlex', label: 'EU Law', icon: Globe },
+  { id: 'hudoc', label: 'ECHR', icon: Globe },
+  { id: 'sos-decisions', label: 'Gov Decisions', icon: Briefcase },
+  { id: 'ombudsman', label: 'Ombudsman', icon: Users },
+  { id: 'regulators', label: 'Regulators', icon: Shield },
 ]
 
 function SearchResultsPage() {

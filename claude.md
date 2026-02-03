@@ -157,16 +157,28 @@ Shared authentication with Court Bundle Builder using the same Firebase project:
 
 Firebase project: `court-bundle-builder` (shared across CoSO apps)
 
-```javascript
-const firebaseConfig = {
-  apiKey: "AIzaSyCyImZnSeMTv4LUuHMW4eTsl5CK80SjoEA",
-  authDomain: "court-bundle-builder.firebaseapp.com",
-  projectId: "court-bundle-builder",
-  storageBucket: "court-bundle-builder.firebasestorage.app",
-  messagingSenderId: "726821679089",
-  appId: "1:726821679089:web:19efdaf18b05eb3f1e1e50"
-}
-```
+**Environment Variables Required:**
+
+Firebase config is loaded from environment variables (not hardcoded for security):
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_FIREBASE_API_KEY` | Firebase API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase project ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Firebase storage bucket |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID |
+| `VITE_FIREBASE_APP_ID` | Firebase app ID |
+| `VITE_FIREBASE_MEASUREMENT_ID` | Firebase measurement ID |
+
+**Local Development:**
+Copy `.env.example` to `.env.local` and fill in the values.
+
+**Production (Cloudflare Pages):**
+Set environment variables in Cloudflare Pages dashboard:
+1. Go to Pages > freelex > Settings > Environment variables
+2. Add all `VITE_FIREBASE_*` variables
+3. Redeploy the site
 
 ## Development Commands
 

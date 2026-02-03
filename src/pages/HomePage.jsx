@@ -1,7 +1,64 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Search, ChevronRight, BookOpen, Scale, Gavel, FileText, Shield, Landmark } from 'lucide-react'
+import { useNavigate, Link } from 'react-router-dom'
+import { Search, ChevronRight, BookOpen, Scale, Gavel, FileText, Shield, Landmark, Lightbulb, Brain, Home, Briefcase, Heart, Users, Download, Star, UserPlus } from 'lucide-react'
 import './HomePage.css'
+
+const SEARCH_TEMPLATES = [
+  {
+    id: 'mental-health',
+    icon: Brain,
+    title: 'Mental Health Detention',
+    description: 'MHA sections, tribunal, nearest relative',
+    query: 'Mental Health Act 1983',
+    source: 'all',
+    color: 'purple',
+  },
+  {
+    id: 'mental-capacity',
+    icon: Lightbulb,
+    title: 'Mental Capacity',
+    description: 'Best interests, DoLS, Court of Protection',
+    query: 'Mental Capacity Act 2005',
+    source: 'all',
+    color: 'blue',
+  },
+  {
+    id: 'child-protection',
+    icon: Users,
+    title: 'Child Protection',
+    description: 'Care orders, s47, parental responsibility',
+    query: 'Children Act 1989',
+    source: 'all',
+    color: 'green',
+  },
+  {
+    id: 'care-planning',
+    icon: Heart,
+    title: 'Adult Social Care',
+    description: 'Needs assessment, eligibility, safeguarding',
+    query: 'Care Act 2014',
+    source: 'all',
+    color: 'pink',
+  },
+  {
+    id: 'housing',
+    icon: Home,
+    title: 'Housing & Homelessness',
+    description: 'Disrepair, possession, allocations',
+    query: 'Housing Act 1996',
+    source: 'all',
+    color: 'orange',
+  },
+  {
+    id: 'employment',
+    icon: Briefcase,
+    title: 'Employment Rights',
+    description: 'Unfair dismissal, redundancy, whistleblowing',
+    query: 'Employment Rights Act 1996',
+    source: 'all',
+    color: 'slate',
+  },
+]
 
 const SOURCE_FILTERS = [
   { id: 'all', label: 'All Sources', icon: Search },
@@ -77,6 +134,30 @@ function HomePage() {
             ))}
           </div>
 
+          {/* Search Templates */}
+          <div className="search-templates">
+            <p className="templates-label">
+              <Lightbulb size={14} />
+              Quick searches:
+            </p>
+            <div className="templates-grid">
+              {SEARCH_TEMPLATES.map(({ id, icon: Icon, title, description, query, source, color }) => (
+                <button
+                  key={id}
+                  className={`template-card template-card--${color}`}
+                  onClick={() => navigate(`/search?q=${encodeURIComponent(query)}&source=${source}`)}
+                >
+                  <Icon size={20} />
+                  <div className="template-content">
+                    <span className="template-title">{title}</span>
+                    <span className="template-description">{description}</span>
+                  </div>
+                  <ChevronRight size={16} className="template-arrow" />
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* CTA Buttons */}
           <div className="cta-buttons">
             <button className="btn btn-white" onClick={handleSearch}>
@@ -97,6 +178,41 @@ function HomePage() {
             <span className="comparison-item comparison-us">
               <span className="comparison-price">£0</span> on FreeLex
             </span>
+          </div>
+
+          {/* Feature Pills */}
+          <div className="hero-features">
+            <div className="hero-feature">
+              <UserPlus size={16} />
+              <span>Free Account</span>
+            </div>
+            <div className="hero-feature">
+              <Star size={16} />
+              <span>Save Searches</span>
+            </div>
+            <div className="hero-feature">
+              <Download size={16} />
+              <span>Export Results</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Register CTA Banner */}
+      <section className="register-banner">
+        <div className="container register-banner-content">
+          <div className="register-banner-text">
+            <h3>Create Your Free Account</h3>
+            <p>Save searches, bookmark results, and export your research. One account works across all CoSO legal tools.</p>
+          </div>
+          <div className="register-banner-actions">
+            <Link to="/register" className="btn btn-primary">
+              Register Free
+              <ChevronRight size={16} />
+            </Link>
+            <Link to="/login" className="btn btn-outline">
+              Sign In
+            </Link>
           </div>
         </div>
       </section>

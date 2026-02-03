@@ -17,6 +17,9 @@ Thumbs.db
 .env.local
 .env.production
 
+# Wrangler
+.wrangler/
+
 # Logs
 *.log
 npm-debug.log*

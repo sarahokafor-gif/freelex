@@ -354,7 +354,7 @@ async function fetchWithTimeout(url, isJson = false, acceptOverride = null) {
 function parseLegislationFeed(xml, source, sourceLabel) {
   const entries = splitEntries(xml);
   return entries.map(entry => {
-    const title = extractTag(entry, 'title');
+    const title = stripHtml(extractTag(entry, 'title'));
     const link = extractAttr(entry, 'link', 'href');
     const summary = stripHtml(extractTag(entry, 'summary') || extractTag(entry, 'content'));
     const updated = extractTag(entry, 'updated') || extractTag(entry, 'published');
@@ -377,7 +377,7 @@ function parseLegislationFeed(xml, source, sourceLabel) {
 function parseCaseLawFeed(xml, source, sourceLabel) {
   const entries = splitEntries(xml);
   return entries.map(entry => {
-    const title = extractTag(entry, 'title');
+    const title = stripHtml(extractTag(entry, 'title'));
     const link = extractAttr(entry, 'link', 'href');
     const summary = stripHtml(extractTag(entry, 'summary') || extractTag(entry, 'content'));
     const updated = extractTag(entry, 'updated') || extractTag(entry, 'published');
